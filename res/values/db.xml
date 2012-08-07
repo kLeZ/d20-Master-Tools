@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="Q_d20MasterTools_db_create">
+        <item>CREATE TABLE NamePatterns ( 
+    ID      INTEGER         PRIMARY KEY AUTOINCREMENT
+                            NOT NULL
+                            UNIQUE
+                            DEFAULT ( 1 ),
+    Pattern VARCHAR( 255 )  NOT NULL
+                            UNIQUE,
+    Deleted BOOLEAN         NOT NULL
+                            DEFAULT ( 0 ) 
+);</item>
+        <item>CREATE TABLE Preferences ( 
+    ID      INTEGER         PRIMARY KEY AUTOINCREMENT
+                            NOT NULL
+                            UNIQUE
+                            DEFAULT ( 1 ),
+    Name    VARCHAR( 150 )  NOT NULL
+                            UNIQUE,
+    Setting TEXT 
+);</item>
+        <item>INSERT INTO Preferences (Name, Setting) VALUES (\'NumberResults\', \'10\');</item>
+    </string-array>
+    <string-array name="Q_d20MasterTools_db_update"></string-array>
+
+    <string name="Q_namepatterns_table_name">NamePatterns</string>
+    <string name="Q_namepatterns_id_field_name">ID</string>
+    <string name="Q_namepatterns_pat_field_name">Pattern</string>
+    <string name="Q_namepatterns_del_field_name">Deleted</string>
+    <string name="Q_preferences_table_name">Preferences</string>
+    <string name="Q_preferences_id_field_name">ID</string>
+    <string name="Q_preferences_key_field_name">Name</string>
+    <string name="Q_preferences_value_field_name">Setting</string>
+
+</resources>

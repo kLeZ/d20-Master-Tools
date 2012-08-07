@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:gecko="http://schemas.android.com/apk/res/it.d20.tools.android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:scrollbars="vertical" >
+
+    <it.gecko.android.widgets.ExpandablePanel
+        android:id="@+id/instructionsPanel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        gecko:content="@+id/textViewInstructions"
+        gecko:handle="@+id/expand" >
+
+        <TextView
+            android:id="@+id/textViewInstructions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/rng_patternlist_instr" />
+
+        <Button
+            android:id="@+id/expand"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/instr_more_button" />
+    </it.gecko.android.widgets.ExpandablePanel>
+
+    <RelativeLayout
+        android:id="@+id/addingBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/instructionsPanel" >
+
+        <Button
+            android:id="@+id/button_add_pattern"
+            android:layout_width="60dip"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:onClick="addPattern"
+            android:text="@string/button_add_pattern" />
+
+        <EditText
+            android:id="@+id/patternText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_toLeftOf="@+id/button_add_pattern"
+            android:ems="10"
+            android:inputType="text"
+            android:focusableInTouchMode="true"
+            android:focusable="true" >
+        </EditText>
+    </RelativeLayout>
+
+    <ListView
+        android:id="@+id/listView_PatternList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/addingBox"
+        android:clickable="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:longClickable="true"
+        android:textFilterEnabled="true" />
+
+</RelativeLayout>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:id="@+id/rng_pl_select_all" android:title="@string/select_all_pattern" android:orderInCategory="1"></item>
+    <item android:id="@+id/rng_pl_deselect_all" android:orderInCategory="2" android:title="@string/deselect_all_pattern"></item>
+    
+
+</menu>
