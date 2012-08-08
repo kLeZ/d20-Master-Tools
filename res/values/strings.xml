@@ -29,5 +29,6 @@
     </string-array>
         <string name="rng_button_text">Character Name Generator</string>
         <string name="throwdice_button_text">Throw Dice</string>
+        <string name="td_title">Throw Dice</string>
 
 </resources>
