@@ -5,7 +5,9 @@ package it.d20.tools.android.activities.rng;
 
 import it.d20.tools.android.R;
 import it.d20.tools.android.db.PreferencesDatabase;
-import it.d20.tools.android.dialogs.RngNumResultsDialog;
+import it.d20.tools.android.dialogs.PickerDialog;
+import it.d20.tools.android.dialogs.PickerClickListener;
+import it.d20.tools.android.dialogs.PickerDismissListener;
 import it.gecko.text.RandomStrings;
 import it.gecko.text.StringUtils;
 import it.gecko.utils.MersenneTwister;
@@ -14,7 +16,6 @@ import java.util.ArrayList;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -87,8 +88,23 @@ public class RngMainActivity extends Activity
 
 	private Dialog initResultsDialog()
 	{
-		RngNumResultsDialog dialog = new RngNumResultsDialog(this, currentTotalResults);
-		dialog.setOnDismissListener(new RngNumResultsDismissListener(this));
+		PickerDialog dialog = new PickerDialog(this, R.string.rng_res_n_title, R.string.save_n_res_button, currentTotalResults);
+		dialog.setOnClickListener(new PickerClickListener(dialog)
+		{
+			@Override
+			public void onClick(View v)
+			{
+				PreferencesDatabase db = new PreferencesDatabase(getDialog().getContext());
+				db.open();
+				String key, value;
+				key = getDialog().getContext().getString(R.string.rng_prefs_res_to_gen);
+				value = String.valueOf(getDialog().getCurrent());
+				db.setPreference(key, value);
+				db.close();
+				getDialog().dismiss();
+			}
+		});
+		dialog.setOnDismissListener(new RngNumResultsDismissListener(this, dialog));
 		return dialog;
 	}
 
@@ -144,15 +160,16 @@ public class RngMainActivity extends Activity
 		return currentTotalResults;
 	}
 
-	public class RngNumResultsDismissListener implements OnDismissListener
+	public class RngNumResultsDismissListener extends PickerDismissListener
 	{
 		private RngMainActivity rngMainActivity;
 
 		/**
 		 * @param rngMainActivity
 		 */
-		public RngNumResultsDismissListener(RngMainActivity rngMainActivity)
+		public RngNumResultsDismissListener(RngMainActivity rngMainActivity, PickerDialog dialog)
 		{
+			super(dialog);
 			this.rngMainActivity = rngMainActivity;
 		}
 
