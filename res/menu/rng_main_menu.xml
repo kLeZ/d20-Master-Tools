@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
-    <item android:id="@+id/rng_clear_res" android:title="@string/rng_clear_res"></item>
-    <item android:id="@+id/rng_res_n" android:title="@string/rng_res_n"></item>
-    
-
+	<item
+		android:id="@+id/rng_clear_res"
+		android:title="@string/rng_clear_res">
+	</item>
+	<item
+		android:id="@+id/rng_res_n"
+		android:title="@string/rng_res_n">
+	</item>
 </menu>
