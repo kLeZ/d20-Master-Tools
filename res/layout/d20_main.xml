@@ -1,25 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent" >
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:orientation="vertical" >
 	<TextView
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:text="@string/main_message" />
-	<Button
-		android:id="@+id/rng_button"
-		android:layout_width="0dp"
+	<TableLayout
+		android:layout_width="fill_parent"
 		android:layout_height="fill_parent"
-		android:layout_weight="1"
-		android:clickable="true"
-		android:onClick="goTo"
-		android:text="@string/rng_button_text" />
-	<Button
-		android:id="@+id/throwdice_button"
-		android:layout_width="0dp"
-		android:layout_height="fill_parent"
-		android:layout_weight="1"
-		android:clickable="true"
-		android:onClick="goTo"
-		android:text="@string/throwdice_button_text" />
+		android:orientation="horizontal"
+		android:padding="6dp" >
+		<TableRow
+			android:layout_width="fill_parent"
+			android:layout_height="130dp" >
+			<Button
+				android:id="@+id/rng_button"
+				android:layout_width="0dp"
+				android:layout_height="fill_parent"
+				android:layout_weight="0.5"
+				android:clickable="true"
+				android:onClick="goTo"
+				android:text="@string/rng_button_text" />
+			<Button
+				android:id="@+id/throwdice_button"
+				android:layout_width="0dp"
+				android:layout_height="fill_parent"
+				android:layout_weight="0.5"
+				android:clickable="true"
+				android:onClick="goTo"
+				android:text="@string/throwdice_button_text" />
+		</TableRow>
+		<TableRow
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content" >
+			<TextView
+				android:id="@+id/bottom_main_row"
+				android:text="@string/bottom_main_row_msg" />
+		</TableRow>
+	</TableLayout>
 </LinearLayout>

@@ -29,4 +29,5 @@
 	<string name="throwdice_button_text">Throw Dice</string>
 	<string name="td_title">Throw Dice</string>
 	<string name="main_message">Make your choice on the tool to use :D</string>
+	<string name="bottom_main_row_msg">Bottom Row, you can find</string>
 </resources>
