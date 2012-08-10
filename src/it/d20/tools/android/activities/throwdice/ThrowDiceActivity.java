@@ -1,8 +1,10 @@
 package it.d20.tools.android.activities.throwdice;
 
 import it.d20.tools.android.R;
+import it.gecko.android.utils.DiceExpressionKeyListener;
 import android.app.Activity;
 import android.os.Bundle;
+import android.widget.EditText;
 
 public class ThrowDiceActivity extends Activity
 {
@@ -11,5 +13,7 @@ public class ThrowDiceActivity extends Activity
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.throwdice_main_layout);
+		EditText et = (EditText) findViewById(R.id.diceExpressionEdit);
+		et.setKeyListener(DiceExpressionKeyListener.getInstance());
 	}
 }
