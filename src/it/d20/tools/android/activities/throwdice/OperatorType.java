@@ -72,13 +72,20 @@ public enum OperatorType
 		return op1 * op2;
 	}
 
+	/**
+	 * This method checks the operands following the rules below.
+	 * RULES:
+	 * - A number cannot be less than 0, if it is, it will become 0
+	 * - A couple of numbers should be reversed if the operation is division and
+	 * the divider is equal or less than 0.
+	 * - The result of the operation cannot be negative, so if subtraction need
+	 * to reverse operands order
+	 * 
+	 * @param op1
+	 * @param op2
+	 */
 	private void check(int op1, int op2)
 	{
-		/* RULES:
-		 * - A number cannot be less than 0, if it is, it will become 0
-		 * - A couple of numbers should be reversed if the operation is division and the divider is equal or less than 0.
-		 * - The result of the operation cannot be negative, so if subtraction need to reverse operands order
-		 */
 		if (op1 < 0)
 		{
 			op1 = 0;
@@ -95,6 +102,59 @@ public enum OperatorType
 		{
 			Utils.swap(op1, op2);
 		}
+	}
+
+	public static int containsOperator(String s)
+	{
+		int ret = -1;
+		char[] chars = s.toCharArray();
+		for (char c : chars)
+		{
+			if (OperatorType.parseOperator(c) != null)
+			{
+				ret = s.indexOf(c);
+				break;
+			}
+		}
+		return ret;
+	}
+
+	public static boolean isOperator(String s)
+	{
+		return (s.length() == 1) && (containsOperator(s) > -1);
+	}
+
+	public static OperatorType getOperator(String s)
+	{
+		return parseOperator(s.charAt(containsOperator(s)));
+	}
+
+	/**
+	 * This method escapes the operator in a string following Regex list of
+	 * escape chars.
+	 * Useful for use in Regex expressions.
+	 * 
+	 * @return an escaped string representation of the operator.
+	 */
+	public String toEscapedString()
+	{
+		String ret = toString();
+		switch (this)
+		{
+			case Addition:
+				ret = "\\".concat(ret);
+				break;
+			case Division:
+				break;
+			case Multiplication:
+				ret = "\\".concat(ret);
+				break;
+			case Subtraction:
+				break;
+			default:
+				break;
+		}
+		return ret;
 	}
 
 	/* (non-Javadoc)
