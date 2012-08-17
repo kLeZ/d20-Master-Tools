@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical"
+	tools:context=".activities.throwdice.ThrowDiceActivity" >
+	<EditText
+		android:id="@+id/diceExpressionEdit"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:inputType="text" />
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal" >
+		<Button
+			android:id="@+id/throwdice_button"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_weight="0.5"
+			android:onClick="onThrowDice"
+			android:text="@string/throwdice_button_text" />
+		<CheckBox
+			android:id="@+id/debugCheck"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_weight="0.5"
+			android:text="@string/debugCheckText" />
+	</LinearLayout>
+	<ScrollView
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent" >
+		<TextView
+			android:id="@+id/tvResults"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content" />
+	</ScrollView>
+</LinearLayout>

@@ -29,7 +29,7 @@ public class RngTabHostActivity extends TabActivity
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.rng_layout);
+		setContentView(R.layout.rngtabhost_layout);
 
 		TabHost tabHost = getTabHost();
 

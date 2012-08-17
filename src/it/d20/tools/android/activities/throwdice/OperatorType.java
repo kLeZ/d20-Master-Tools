@@ -6,6 +6,12 @@ public enum OperatorType
 {
 	Addition, Subtraction, Multiplication, Division;
 
+	public static char[] getOperators()
+	{
+		return new char[]
+		{ '+', '-', '*', '/' };
+	}
+
 	public static OperatorType parseOperator(char op)
 	{
 		OperatorType type = null;
@@ -122,6 +128,11 @@ public enum OperatorType
 	public static boolean isOperator(String s)
 	{
 		return (s.length() == 1) && (containsOperator(s) > -1);
+	}
+
+	public static boolean isOperator(char c)
+	{
+		return isOperator(String.valueOf(c));
 	}
 
 	public static OperatorType getOperator(String s)

@@ -191,4 +191,9 @@ public class DiceThrow
 		}
 		return sb.toString();
 	}
+
+	public String toEnclosedString()
+	{
+		return String.format("%s%s%s", OPENED_DICE, toString(), CLOSED_DICE);
+	}
 }
