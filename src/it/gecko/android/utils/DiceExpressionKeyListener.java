@@ -1,13 +1,10 @@
 package it.gecko.android.utils;
 
-import it.d20.tools.android.R;
-import it.d20.tools.android.activities.throwdice.DiceThrow;
-import it.d20.tools.android.activities.throwdice.OperatorType;
+import it.gecko.utils.Dice;
+import it.gecko.utils.OperatorType;
 
 import org.apache.commons.lang3.ArrayUtils;
 
-import android.app.Activity;
-import android.content.Context;
 import android.text.InputType;
 import android.text.Spanned;
 import android.text.method.NumberKeyListener;
@@ -17,21 +14,19 @@ import android.widget.TextView;
 public class DiceExpressionKeyListener extends NumberKeyListener
 {
 	private static final char[] BASE_CHARS = new char[]
-	{ DiceThrow.DICE_TOKEN, '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0' };
+	{ Dice.DICE_TOKEN, '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0' };
 	public static final char[] CHARACTERS = ArrayUtils.addAll(BASE_CHARS, OperatorType.getOperators());
-
-	private static DiceExpressionKeyListener instance;
 
 	private final char[] accepted;
 
-	private Context context;
 	private TextView textView;
+	private CheckBox debugCheck;
 
-	public DiceExpressionKeyListener(Context context)
+	public DiceExpressionKeyListener(TextView textView, CheckBox debugCheck)
 	{
 		super();
-		this.context = context;
-		textView = (TextView) ((Activity) this.context).findViewById(R.id.tvResults);
+		this.textView = textView;
+		this.debugCheck = debugCheck;
 		accepted = CHARACTERS;
 	}
 
@@ -39,18 +34,6 @@ public class DiceExpressionKeyListener extends NumberKeyListener
 	public char[] getAcceptedChars()
 	{
 		return accepted;
-	}
-
-	/**
-	 * @return the instance
-	 */
-	public static DiceExpressionKeyListener getInstance(Context context)
-	{
-		if (instance == null)
-		{
-			instance = new DiceExpressionKeyListener(context);
-		}
-		return instance;
 	}
 
 	/* (non-Javadoc)
@@ -64,7 +47,7 @@ public class DiceExpressionKeyListener extends NumberKeyListener
 
 	private boolean isDebug()
 	{
-		return ((CheckBox) ((Activity) context).findViewById(R.id.debugCheck)).isChecked();
+		return debugCheck.isChecked();
 	}
 
 	/*
@@ -83,10 +66,10 @@ public class DiceExpressionKeyListener extends NumberKeyListener
 	 * Ovviamente dato questo funzionamento, ottimale per la verità, è
 	 * necessario solo attuare la logica per mantenere la struttura dei
 	 * dati, in questo caso l'espressione del lancio di dadi.
-	 * La logica per l'espressione è aiutata dalla classe DiceThrow che
+	 * La logica per l'espressione è aiutata dalla classe Dice che
 	 * permette di strutturare l'espressione in un oggetto.
 	 * Ok, strutturiamo la logica per la struttura del testo:
-	 * Intanto, devo sempre cercare la 'D' per delimitare il DiceThrow.
+	 * Intanto, devo sempre cercare la 'D' per delimitare il Dice.
 	 * Se riesco a riconoscerne una devo sempre controllare che prima di
 	 * questa ci sia un numero,
 	 * in caso contrario lancio un toast in cui dico che prima della
@@ -111,30 +94,48 @@ public class DiceExpressionKeyListener extends NumberKeyListener
 			textView.append(printFilter(source, start, end, dest, dstart, dend, ret));
 		}
 
-		String contents = dest.toString();
-		OperatorType operator = null;
-
-		if ((dest.length() > 1) && (DiceThrow.isDiceThrow(contents) || (OperatorType.isOperator(contents.charAt(0)) && DiceThrow.isDiceThrow(contents.substring(1)))))
+		if (source.length() > 0)
 		{
-			if ((OperatorType.isOperator(contents.charAt(0)) && DiceThrow.isDiceThrow(contents.substring(1))))
+			char c = source.charAt(0);
+			String sdest = dest.toString();
+			if (sdest.isEmpty() && !Character.isDigit(c))
 			{
-				operator = OperatorType.parseOperator(contents.charAt(0));
-				contents = contents.substring(1);
+				deleteFilter(source, start, end, dest, dstart, dend, ret);
 			}
-			DiceThrow dt = DiceThrow.parse(contents);
-			textView.append((operator != null ? operator : "").toString());
-			textView.append(dt.toEnclosedString());
-			ret = null;
-			source = "";
-			start = 0;
-			end = 0;
-			dstart = 0;
-			dend = dest.length();
+			else if (c == Dice.DICE_TOKEN)
+			{
+				if (!Character.isDigit(last(sdest)) || sdest.contains(Dice.DICE_TOKEN_S))
+				{
+					deleteFilter(source, start, end, dest, dstart, dend, ret);
+				}
+			}
+			else if (OperatorType.isOperator(c))
+			{
+				if (!Character.isDigit(last(sdest)) || OperatorType.containsOperator(sdest))
+				{
+					deleteFilter(source, start, end, dest, dstart, dend, ret);
+				}
+			}
 		}
 		return ret;
 	}
 
-	private String printFilter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend, CharSequence ret)
+	private char last(String sp)
+	{
+		return sp.charAt(sp.length() - 1);
+	}
+
+	private void deleteFilter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend, CharSequence ret)
+	{
+		ret = "";
+		source = "";
+		start = 0;
+		end = 0;
+		dstart = 0;
+		dend = dest.length();
+	}
+
+	private String printFilter(final CharSequence source, final int start, final int end, final Spanned dest, final int dstart, final int dend, final CharSequence ret)
 	{
 		StringBuilder sb = new StringBuilder();
 		sb.append("[");

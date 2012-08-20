@@ -1,22 +1,22 @@
-package it.d20.tools.android.activities.throwdice;
+package it.gecko.utils;
 
-import it.gecko.utils.Utils;
+import java.util.*;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-
-public class DiceThrow
+public class Dice
 {
-	public static final char DICE_TOKEN = 'D';
 	public static final char OPENED_DICE = '(';
 	public static final char CLOSED_DICE = ')';
+	public static final char DICE_TOKEN = 'D';
+	public static final String DICE_TOKEN_S = String.valueOf(DICE_TOKEN);
+
+	private static final MersenneTwister random = new MersenneTwister(299792458);
 
 	private final int nThrows;
 	private final int nFaces;
 	private final OperatorType modifierOperator;
 	private final int modifier;
 
-	public DiceThrow(int nThrows, int nFaces)
+	public Dice(int nThrows, int nFaces)
 	{
 		this.nThrows = nThrows;
 		this.nFaces = nFaces;
@@ -24,7 +24,7 @@ public class DiceThrow
 		modifier = Integer.MIN_VALUE;
 	}
 
-	public DiceThrow(int nThrows, int nFaces, OperatorType modifierOperator, int modifier)
+	public Dice(int nThrows, int nFaces, OperatorType modifierOperator, int modifier)
 	{
 		this.nThrows = nThrows;
 		this.nFaces = nFaces;
@@ -64,16 +64,24 @@ public class DiceThrow
 		return modifier;
 	}
 
-	public static boolean isDiceThrow(String dt)
+	/**
+	 * @return
+	 */
+	private boolean hasModifier()
+	{
+		return (modifierOperator != null) && (modifier != Integer.MIN_VALUE);
+	}
+
+	public static boolean isDice(String dt)
 	{
 		return parse(dt) != null;
 	}
 
-	public static LinkedHashMap<DiceThrow, OperatorType> parseMany(String dts)
+	public static LinkedHashMap<Dice, OperatorType> parseMany(String dts)
 	{
-		LinkedHashMap<DiceThrow, OperatorType> ret = new LinkedHashMap<DiceThrow, OperatorType>();
+		LinkedHashMap<Dice, OperatorType> ret = new LinkedHashMap<Dice, OperatorType>();
 		ArrayList<String> parts = Utils.splitEncolosed(dts, OPENED_DICE, CLOSED_DICE);
-		DiceThrow dt = null;
+		Dice dt = null;
 		OperatorType ot = null;
 
 		for (int i = 0; (i + 1) <= parts.size(); i += 2)
@@ -81,24 +89,24 @@ public class DiceThrow
 			String part1 = parts.get(i);
 			String part2 = (i + 1) < parts.size() ? parts.get(i + 1) : "";
 
-			if (isDiceThrow(part1))
+			if (isDice(part1))
 			{
 				if (dt == null)
 				{
-					dt = DiceThrow.parse(part1);
+					dt = Dice.parse(part1);
 				}
 				else
 				{
 					ret.put(dt, OperatorType.Addition);
-					dt = DiceThrow.parse(part1);
+					dt = Dice.parse(part1);
 					ot = null;
 				}
 			}
 
-			if (isDiceThrow(part2))
+			if (isDice(part2))
 			{
 				ret.put(dt, OperatorType.Addition);
-				dt = DiceThrow.parse(part2);
+				dt = Dice.parse(part2);
 			}
 			else
 			{
@@ -114,11 +122,11 @@ public class DiceThrow
 		return ret;
 	}
 
-	public static DiceThrow parse(String dt)
+	public static Dice parse(String dt)
 	{
-		DiceThrow ret = null;
+		Dice ret = null;
 		dt = dt.toUpperCase();
-		String[] diceparts = dt.split(String.valueOf(DICE_TOKEN));
+		String[] diceparts = dt.split(DICE_TOKEN_S);
 		if (diceparts.length == 2)
 		{
 			int nThrows = Integer.valueOf(diceparts[0]), nFaces = 0, modifier = 0;
@@ -150,12 +158,69 @@ public class DiceThrow
 				{
 					modifier = Integer.valueOf(bonusParts[1]);
 				}
-				ret = new DiceThrow(nThrows, nFaces, opType, modifier);
+				ret = new Dice(nThrows, nFaces, opType, modifier);
 			}
 			else
 			{
-				ret = new DiceThrow(nThrows, nFaces);
+				ret = new Dice(nThrows, nFaces);
 			}
+		}
+		return ret;
+	}
+
+	public static Integer rollSum(LinkedHashMap<Dice, OperatorType> dice)
+	{
+		Integer ret = 0;
+		Iterator<Map.Entry<Dice, OperatorType>> it = dice.entrySet().iterator();
+		OperatorType op = null;
+		while (it.hasNext())
+		{
+			Map.Entry<Dice, OperatorType> current = it.next();
+			if (op != null)
+			{
+				ret = op.doOperation(ret, current.getKey().roll());
+			}
+			else
+			{
+				// First roll
+				ret = current.getKey().roll();
+			}
+			op = current.getValue();
+		}
+		return ret;
+	}
+
+	public static ArrayList<Integer> roll(LinkedHashSet<Dice> dice)
+	{
+		ArrayList<Integer> ret = new ArrayList<Integer>();
+		Iterator<Dice> it = dice.iterator();
+		while (it.hasNext())
+		{
+			ret.add(it.next().roll());
+		}
+		return ret;
+	}
+
+	public static ArrayList<Integer> roll(Dice... dice)
+	{
+		ArrayList<Integer> ret = new ArrayList<Integer>();
+		for (Dice die : dice)
+		{
+			ret.add(die.roll());
+		}
+		return ret;
+	}
+
+	public Integer roll()
+	{
+		int ret = 0;
+		for (int i = 0; i < getnThrows(); i++)
+		{
+			ret += random.next(1, getnFaces());
+		}
+		if (hasModifier())
+		{
+			ret = getModifierOperator().doOperation(ret, getModifier());
 		}
 		return ret;
 	}
@@ -167,12 +232,12 @@ public class DiceThrow
 	public boolean equals(Object o)
 	{
 		boolean ret = false;
-		if (o instanceof DiceThrow)
+		if (o instanceof Dice)
 		{
-			ret = getnThrows() == ((DiceThrow) o).getnThrows();
-			ret &= getnFaces() == ((DiceThrow) o).getnFaces();
-			ret &= getModifierOperator() == ((DiceThrow) o).getModifierOperator();
-			ret &= getModifier() == ((DiceThrow) o).getModifier();
+			ret = getnThrows() == ((Dice) o).getnThrows();
+			ret &= getnFaces() == ((Dice) o).getnFaces();
+			ret &= getModifierOperator() == ((Dice) o).getModifierOperator();
+			ret &= getModifier() == ((Dice) o).getModifier();
 		}
 		return ret;
 	}

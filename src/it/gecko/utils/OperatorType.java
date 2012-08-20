@@ -1,6 +1,4 @@
-package it.d20.tools.android.activities.throwdice;
-
-import it.gecko.utils.Utils;
+package it.gecko.utils;
 
 public enum OperatorType
 {
@@ -110,7 +108,7 @@ public enum OperatorType
 		}
 	}
 
-	public static int containsOperator(String s)
+	public static int indexOfOperator(String s)
 	{
 		int ret = -1;
 		char[] chars = s.toCharArray();
@@ -125,9 +123,14 @@ public enum OperatorType
 		return ret;
 	}
 
+	public static boolean containsOperator(String s)
+	{
+		return indexOfOperator(s) > -1;
+	}
+
 	public static boolean isOperator(String s)
 	{
-		return (s.length() == 1) && (containsOperator(s) > -1);
+		return (s.length() == 1) && (indexOfOperator(s) > -1);
 	}
 
 	public static boolean isOperator(char c)
@@ -137,7 +140,7 @@ public enum OperatorType
 
 	public static OperatorType getOperator(String s)
 	{
-		return parseOperator(s.charAt(containsOperator(s)));
+		return parseOperator(s.charAt(indexOfOperator(s)));
 	}
 
 	/**

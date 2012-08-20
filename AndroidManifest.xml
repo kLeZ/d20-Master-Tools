@@ -46,7 +46,7 @@
 		</activity>
 		<activity
 			android:name=".activities.throwdice.ThrowDiceActivity"
-			android:label="@string/td_title" >
+			android:label="@string/throwdice_title" >
 			<intent-filter>
 				<action android:name="android.intent.action.VIEW" />
 				<category android:name="android.intent.category.DEFAULT" />
