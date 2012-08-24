@@ -30,7 +30,7 @@
 				android:layout_weight="0.5"
 				android:clickable="true"
 				android:onClick="goTo"
-				android:text="@string/throwdice_button_text" />
+				android:text="@string/throwdice_throw_menu_text" />
 		</TableRow>
 		<TableRow
 			android:layout_width="fill_parent"

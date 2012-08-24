@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+	<item
+		android:id="@+id/throwdice_menu_throw"
+		android:title="@string/throwdice_throw_menu_text"/>
+	<item
+		android:id="@+id/throwdice_menu_evaluateSingle"
+		android:title="@string/throwdice_evaluateSingle">
+	</item>
+</menu>

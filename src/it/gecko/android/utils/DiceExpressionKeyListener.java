@@ -7,8 +7,6 @@ import android.text.method.BaseKeyListener;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.CheckBox;
-import android.widget.TextView;
 
 public class DiceExpressionKeyListener extends BaseKeyListener implements InputFilter
 {
@@ -18,14 +16,8 @@ public class DiceExpressionKeyListener extends BaseKeyListener implements InputF
 
 	private final char[] accepted;
 
-	private final TextView textView;
-	private final CheckBox debugCheck;
-
-	public DiceExpressionKeyListener(TextView textView, CheckBox debugCheck)
+	public DiceExpressionKeyListener()
 	{
-		super();
-		this.textView = textView;
-		this.debugCheck = debugCheck;
 		accepted = new char[BASE_CHARS.length + OperatorType.getOperators().length];
 		System.arraycopy(BASE_CHARS, 0, accepted, 0, BASE_CHARS.length);
 		System.arraycopy(OperatorType.getOperators(), 0, accepted, BASE_CHARS.length, OperatorType.getOperators().length);
@@ -43,11 +35,6 @@ public class DiceExpressionKeyListener extends BaseKeyListener implements InputF
 	public int getInputType()
 	{
 		return InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS;
-	}
-
-	public boolean isDebug()
-	{
-		return debugCheck.isChecked();
 	}
 
 	/*
@@ -81,6 +68,34 @@ public class DiceExpressionKeyListener extends BaseKeyListener implements InputF
 	 * Se il nuovo carattere non è una 'D' controllare che non sia un
 	 * segno, a meno che dopo la 'D' non ci siano dei numeri, in quel caso
 	 * è ammesso.
+	 * -------------------------------------------------------------------------
+	 * 
+	 * Allora il metodo filter viene richiamato dal metodo setText() della TextView
+	 * (ricordo che la EditText è una TextView che implementa l'interfaccia Editable)
+	 * con questo SPECIFICO codice:
+	 * 
+	 * |||| Pseudo codice per spiegare da dove viene mFilters. ||||
+	 * 
+	 * 
+	 * InputFilter[] mFilters = <-- setKeyListener(KeyListener);
+	 * 
+	 * 
+	 * |||| Pseudo codice per spiegare da dove viene mFilters. ||||
+	 * 
+	 * 
+	    int n = mFilters.length;
+	    for (int i = 0; i < n; i++) {
+	        CharSequence out = mFilters[i].filter(text, 0, text.length(),
+	                                              EMPTY_SPANNED, 0, 0);
+	        if (out != null) {
+	            text = out;
+	        }
+	    }
+	 * 
+	 * 
+	 * Ne consegue che in realtà quello che conta è il CharSequence di return,
+	 * fondamentale perché sovrascrive ogni volta il testo.
+	 * 
 	 * 
 	 * @see android.text.method.NumberKeyListener#filter(java.lang.CharSequence,
 	 *      int, int, android.text.Spanned, int, int)
@@ -88,9 +103,9 @@ public class DiceExpressionKeyListener extends BaseKeyListener implements InputF
 	@Override
 	public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend)
 	{
-		@SuppressWarnings("unused")
-		boolean filter = false;
-
+		CharSequence ret = null;
+		boolean filter = end > 1;
+		int trueend = end;
 		int i;
 		for (i = start; i < end; i++)
 		{
@@ -103,21 +118,19 @@ public class DiceExpressionKeyListener extends BaseKeyListener implements InputF
 		if (i == end)
 		{
 			// It was all OK.
-			return null;
+			ret = null;
 		}
 
 		if ((end - start) == 1)
 		{
 			// It was not OK, and there is only one char, so nothing remains.
-			return "";
+			ret = "";
 		}
 
 		SpannableStringBuilder filtered = new SpannableStringBuilder(source, start, end);
 		i -= start;
 		end -= start;
 
-		@SuppressWarnings("unused")
-		int len = end - start;
 		// Only count down to i because the chars before that were all OK.
 		for (int j = end - 1; j >= i; j--)
 		{
@@ -128,47 +141,74 @@ public class DiceExpressionKeyListener extends BaseKeyListener implements InputF
 		}
 
 		/*
-		 * START OF SELF CODE
+		 * Quando filtro un carattere rimane nella variabile source, appeso,
+		 * Ricordarsi di toglierlo da li controllando end, in modo da non
+		 * trovarselo alla chiamata successiva.
 		 */
-
-		log(printFilter(source, start, end, dest, dstart, dend, filtered));
-		if (filtered != null)
+		if (filter)
 		{
-			source = filtered;
-			start = 0;
-			end = filtered.length();
+			source = source.subSequence(0, trueend - 1);
 		}
 
-		if (source.length() > 0)
+		ret = filtered;
+
+		log(printFilter(source, start, end, dest, dstart, dend, filtered));
+
+		if (ret.length() > 0)
 		{
+			// Entro solo se source è valorizzato con qualcosa
 			log("I'm in -> source.length() > 0");
-			char c = last(source);
+			char c = last(ret);
 			String sdest = dest.toString();
 			if (sdest.isEmpty() && !Character.isDigit(c))
 			{
+				/*
+				 * La regola specifica che l'espressione deve cominciare con un numero.
+				 * In questo caso la destinazione (il contenuto "corrente" della TextView) è vuota
+				 * e controllo se il primo carattere che viene inserito è un numero.
+				 * Non lo è, di conseguenza non inserisco nulla.
+				 */
 				log("I'm in -> sdest.isEmpty() && !Character.isDigit(c)");
-				deleteFilter(source, start, end, dest, dstart, dend, filtered);
+				ret = "";
 			}
 			else if (c == Dice.DICE_TOKEN)
 			{
+				/*
+				 * La regola specifica che ci deve essere un "Dice Token" in questo caso 'D'
+				 * Se sono in presenza di un Dice Token posso andare avanti.
+				 */
 				log("I'm in -> c == Dice.DICE_TOKEN");
 				if (!Character.isDigit(last(sdest)) || sdest.contains(Dice.DICE_TOKEN_S))
 				{
+					/*
+					 * Il Dice Token in questo caso non è al posto giusto perché
+					 * prima di esso deve comparire un numero, che non compare.
+					 */
 					log("I'm in -> !Character.isDigit(last(sdest)) || sdest.contains(Dice.DICE_TOKEN_S)");
-					deleteFilter(source, start, end, dest, dstart, dend, filtered);
+					ret = ret.subSequence(0, ret.length() - 1); // Ho messo -1 perché il subSequence tratta l'end come esclusivo.
 				}
 			}
 			else if (OperatorType.isOperator(c))
 			{
+				/*
+				 * La regola definisce che opzionalmente può esserci un operatore aritmetico.
+				 * Se sono in presenza di un operatore aritmetico posso proseguire.
+				 */
 				log("I'm in -> OperatorType.isOperator(c)");
-				if (!Character.isDigit(last(sdest)) || OperatorType.containsOperator(sdest))
+				if (!Character.isDigit(last(sdest)) || OperatorType.containsOperator(sdest) || !sdest.contains(Dice.DICE_TOKEN_S))
 				{
-					log("I'm in -> !Character.isDigit(last(sdest)) || OperatorType.containsOperator(sdest)");
-					deleteFilter(source, start, end, dest, dstart, dend, filtered);
+					/*
+					 * L'operatore non può essere ammesso perché:
+					 * - ne è già presente uno;
+					 * - l'ultimo carattere non è un numero, quindi l'espressione di base non è completa
+					 * - l'espressione non contiene un Dice Token, quindi non è ancora completa
+					 */
+					log("I'm in -> !Character.isDigit(last(sdest)) || OperatorType.containsOperator(sdest) || !sdest.contains(Dice.DICE_TOKEN_S)");
+					ret = ret.subSequence(0, ret.length() - 1); // Ho messo -1 perché il subSequence tratta l'end come esclusivo.
 				}
 			}
 		}
-		return filtered;
+		return ret;
 	}
 
 	protected static boolean ok(char[] accept, char c)
@@ -181,12 +221,6 @@ public class DiceExpressionKeyListener extends BaseKeyListener implements InputF
 		return false;
 	}
 
-	@SuppressWarnings("unused")
-	private char last(Spanned s)
-	{
-		return s.charAt(s.length() - 1);
-	}
-
 	private char last(CharSequence s)
 	{
 		return s.charAt(s.length() - 1);
@@ -195,16 +229,6 @@ public class DiceExpressionKeyListener extends BaseKeyListener implements InputF
 	private char last(String s)
 	{
 		return s.charAt(s.length() - 1);
-	}
-
-	private void deleteFilter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend, CharSequence ret)
-	{
-		ret = null;
-		source = "";
-		start = 0;
-		end = Math.max(source.length(), dest.length());
-		dstart = 0;
-		dend = dest.length();
 	}
 
 	private String printFilter(final CharSequence source, final int start, final int end, final Spanned dest, final int dstart, final int dend, final CharSequence ret)
@@ -225,12 +249,7 @@ public class DiceExpressionKeyListener extends BaseKeyListener implements InputF
 
 	private void log(String text)
 	{
-		if (isDebug())
-		{
-			textView.append(text);
-			textView.append(System.getProperty("line.separator"));
-			Log.d(TAG, text);
-		}
+		Log.d(TAG, text);
 	}
 
 	protected int lookup(KeyEvent event, Spannable content)

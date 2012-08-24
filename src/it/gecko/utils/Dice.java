@@ -125,47 +125,60 @@ public class Dice
 	public static Dice parse(String dt)
 	{
 		Dice ret = null;
-		dt = dt.toUpperCase();
-		String[] diceparts = dt.split(DICE_TOKEN_S);
-		if (diceparts.length == 2)
+		try
 		{
-			int nThrows = Integer.valueOf(diceparts[0]), nFaces = 0, modifier = 0;
-			String nFacesBld = "";
-			OperatorType opType = null;
-			char[] faceParts = diceparts[1].toCharArray();
-			for (char c : faceParts)
+			dt = dt.toUpperCase();
+			String[] diceparts = dt.split(DICE_TOKEN_S);
+			if (diceparts.length == 2)
 			{
-				String current = String.valueOf(c);
-				if (Utils.isInteger(current))
+				int nThrows = Integer.valueOf(diceparts[0]), nFaces = 0, modifier = 0;
+				String nFacesBld = "";
+				OperatorType opType = null;
+				char[] faceParts = diceparts[1].toCharArray();
+				for (char c : faceParts)
 				{
-					nFacesBld = nFacesBld.concat(current);
+					String current = String.valueOf(c);
+					if (Utils.isInteger(current))
+					{
+						nFacesBld = nFacesBld.concat(current);
+					}
+					else if ((opType = OperatorType.parseOperator(c)) != null)
+					{
+						break;
+					}
+					else
+					{
+						break;
+					}
 				}
-				else if ((opType = OperatorType.parseOperator(c)) != null)
+				nFaces = Integer.valueOf(nFacesBld);
+
+				if (opType != null)
 				{
-					break;
+					String[] bonusParts = diceparts[1].split(opType.toEscapedString());
+					if ((bonusParts.length == 2) && Utils.isInteger(bonusParts[1]))
+					{
+						modifier = Integer.valueOf(bonusParts[1]);
+					}
+					ret = new Dice(nThrows, nFaces, opType, modifier);
 				}
 				else
 				{
-					break;
+					ret = new Dice(nThrows, nFaces);
 				}
-			}
-			nFaces = Integer.valueOf(nFacesBld);
-
-			if (opType != null)
-			{
-				String[] bonusParts = diceparts[1].split(opType.toEscapedString());
-				if ((bonusParts.length == 2) && Utils.isInteger(bonusParts[1]))
-				{
-					modifier = Integer.valueOf(bonusParts[1]);
-				}
-				ret = new Dice(nThrows, nFaces, opType, modifier);
-			}
-			else
-			{
-				ret = new Dice(nThrows, nFaces);
 			}
 		}
+		catch (NumberFormatException e)
+		{
+			e.printStackTrace();
+			ret = null;
+		}
 		return ret;
+	}
+
+	public static Integer rollSum(String diceExpression)
+	{
+		return rollSum(parseMany(diceExpression));
 	}
 
 	public static Integer rollSum(LinkedHashMap<Dice, OperatorType> dice)
@@ -188,6 +201,11 @@ public class Dice
 			op = current.getValue();
 		}
 		return ret;
+	}
+
+	public static ArrayList<Integer> roll(String diceExpression)
+	{
+		return roll(new LinkedHashSet<Dice>(parseMany(diceExpression).keySet()));
 	}
 
 	public static ArrayList<Integer> roll(LinkedHashSet<Dice> dice)
