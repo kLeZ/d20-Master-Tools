@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 	<item
 		android:id="@+id/rng_clear_res"
-		android:title="@string/rng_clear_res">
+		android:title="@string/clear">
 	</item>
 	<item
 		android:id="@+id/rng_res_n"

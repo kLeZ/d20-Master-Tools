@@ -7,4 +7,12 @@
 		android:id="@+id/throwdice_menu_evaluateSingle"
 		android:title="@string/throwdice_evaluateSingle">
 	</item>
+	<item
+		android:id="@+id/throwdice_menu_clearTextView"
+		android:title="@string/clear">
+	</item>
+	<item
+		android:id="@+id/throwdice_menu_resetDiceExpression"
+		android:title="@string/throwdice_reset_diceExpression">
+	</item>
 </menu>

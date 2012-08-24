@@ -181,6 +181,38 @@ public class Dice
 		return rollSum(parseMany(diceExpression));
 	}
 
+	public static String rollShowResults(String diceExpression)
+	{
+		LinkedHashMap<Dice, OperatorType> dice = parseMany(diceExpression);
+		StringBuilder sb = new StringBuilder();
+		Iterator<Map.Entry<Dice, OperatorType>> it = dice.entrySet().iterator();
+		OperatorType op = null;
+		Integer res = 0, roll = 0;
+		sb.append("{");
+		while (it.hasNext())
+		{
+			Map.Entry<Dice, OperatorType> current = it.next();
+			if (op != null)
+			{
+				roll = current.getKey().roll();
+				res = op.doOperation(res, roll);
+			}
+			else
+			{
+				// First roll
+				res = current.getKey().roll();
+			}
+			op = current.getValue();
+			sb.append("[").append(roll).append(":").append(res).append("]");
+			if (op != null)
+			{
+				sb.append(op.toString());
+			}
+		}
+		sb.append("} = ").append(res);
+		return sb.toString();
+	}
+
 	public static Integer rollSum(LinkedHashMap<Dice, OperatorType> dice)
 	{
 		Integer ret = 0;

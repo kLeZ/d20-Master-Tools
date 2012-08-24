@@ -12,7 +12,17 @@
 		android:inputType="text" />
 	<ScrollView
 		android:layout_width="fill_parent"
-		android:layout_height="fill_parent" >
+		android:layout_height="fill_parent"
+		android:layout_weight="0.5" >
+		<TextView
+			android:id="@+id/throwdice_tvDiceExpression"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content" />
+	</ScrollView>
+	<ScrollView
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:layout_weight="0.5" >
 		<TextView
 			android:id="@+id/throwdice_tvResults"
 			android:layout_width="match_parent"

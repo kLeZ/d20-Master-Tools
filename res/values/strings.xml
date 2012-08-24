@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+	<!-- Generici, riutilizzabili ovunque (tanto so stringhe!) -->
+	<string name="clear">Clear</string>
+	<!-- Specifici -->
 	<string name="app_name">d20 Master Tools</string>
-	<string name="buttonGenerateText">Generate!</string>
+	<string name="buttonGenerateText">Generate</string>
 	<string name="rng_patternlist_instr">\"@\" Lower Consonant ]__[ \"$\" Upper Consonant\n
 \"!\" Lower Vowel ]__[ \"&amp;\" Upper Vowel\n
 \"*\" Any Lower ]__[ \"~\" Any Upper\n
@@ -14,7 +17,6 @@
 	<string name="instr_more_button">Instructions</string>
 	<string name="select_all_pattern">Select all</string>
 	<string name="deselect_all_pattern">Deselect all</string>
-	<string name="rng_clear_res">Clear</string>
 	<string name="rng_res_n">How many results</string>
 	<string name="rng_res_n_title">Results to generate?</string>
 	<string name="save_n_res_button">Save preference</string>
@@ -32,5 +34,7 @@
 	<string name="bottom_main_row_msg">Bottom Row, you can find</string>
 	<string name="throwdice_evaluateSingle">Evaluate Single Dice Expression</string>
 	<string name="throwdice_rolled_show_text">Dice rolled! Result is: </string>
-	<string name="throwdice_nade">You\'re trying to evaluate an expression that is not a dice expression!</string>
+	<string name="throwdice_nade">You\'re trying to evaluate an expression that is not valid!</string>
+	<string name="throwdice_choose_operator_msg">Please choose an operator!</string>
+	<string name="throwdice_reset_diceExpression">Reset Expression</string>
 </resources>
