@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.*;
 
 public class ThrowDiceActivity extends Activity
@@ -32,6 +33,20 @@ public class ThrowDiceActivity extends Activity
 		tvDiceExpression = (TextView) findViewById(R.id.throwdice_tvDiceExpression);
 		tvResults = (TextView) findViewById(R.id.throwdice_tvResults);
 		et.setKeyListener(new DiceExpressionKeyListener());
+		tvDiceExpression.setOnLongClickListener(new View.OnLongClickListener()
+		{
+			@Override
+			public boolean onLongClick(View v)
+			{
+				boolean ret = false;
+				if (((TextView) v).getText().length() >= 5)
+				{
+					getOperatorChoiceDialog().show();
+					ret = true;
+				}
+				return ret;
+			}
+		});
 	}
 
 	@Override
@@ -48,21 +63,38 @@ public class ThrowDiceActivity extends Activity
 		// Handle item selection
 		switch (item.getItemId())
 		{
-			case R.id.throwdice_menu_throw:
-				onThrowDice();
-				return true;
-			case R.id.throwdice_menu_evaluateSingle:
-				onEvaluateSingle();
-				return true;
 			case R.id.throwdice_menu_clearTextView:
 				onClear();
 				return true;
 			case R.id.throwdice_menu_resetDiceExpression:
 				onResetDiceExpression();
 				return true;
+			case R.id.throwdice_menu_help:
+				onHelp();
+				return true;
 			default:
 				return super.onOptionsItemSelected(item);
 		}
+	}
+
+	private void onHelp()
+	{
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+		ScrollView scroll = new ScrollView(this);
+		TextView text = new TextView(this);
+		text.setText(R.string.help_throwdice);
+		scroll.addView(text);
+
+		builder.setView(scroll);
+		builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener()
+		{
+			@Override
+			public void onClick(DialogInterface dialog, int which)
+			{
+				dialog.dismiss();
+			}
+		});
 	}
 
 	public void onResetDiceExpression()
@@ -75,7 +107,7 @@ public class ThrowDiceActivity extends Activity
 		tvResults.setText("");
 	}
 
-	public void onThrowDice()
+	public void onThrowDice(View view)
 	{
 		try
 		{
@@ -84,20 +116,17 @@ public class ThrowDiceActivity extends Activity
 			msg = msg.concat(Dice.rollShowResults(tvDiceExpression.getText().toString()));
 			tvResults.append(System.getProperty("line.separator"));
 			tvResults.append(msg);
-			Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
 		}
 		catch (Exception e)
 		{
-			Log.w(TAG, "Not a dice expression!");
-			Toast.makeText(this, getText(R.string.throwdice_nade), Toast.LENGTH_LONG).show();
+			Log.w(TAG, getText(R.string.throwdice_nade).toString());
 		}
 	}
 
-	public void onEvaluateSingle()
+	public void onEvaluateSingle(View view)
 	{
 		Dice d = Dice.parse(et.getText().toString());
 		tvDiceExpression.append(d.toEnclosedString());
-		getOperatorChoiceDialog().show();
 		et.setText("");
 	}
 
@@ -107,13 +136,24 @@ public class ThrowDiceActivity extends Activity
 		return new ArrayAdapter<OperatorType>(this, spinner_view, OperatorType.values());
 	}
 
-	private Dialog getOperatorChoiceDialog()
+	protected Dialog getOperatorChoiceDialog()
 	{
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+		LinearLayout layout = new LinearLayout(this);
+		layout.setOrientation(LinearLayout.VERTICAL);
+
+		final TextView info = new TextView(this);
+		info.setText(getText(R.string.throwdice_operatorchoice_info));
+		layout.addView(info);
+
 		final Spinner opCombo = new Spinner(this);
 		opCombo.setAdapter(getAdapter());
-		builder.setView(opCombo);
-		builder.setPositiveButton("OK", new DialogInterface.OnClickListener()
+		layout.addView(opCombo);
+
+		builder.setView(layout);
+
+		builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener()
 		{
 			@Override
 			public void onClick(DialogInterface dialog, int which)
@@ -130,6 +170,14 @@ public class ThrowDiceActivity extends Activity
 					CharSequence msg = ctx.getText(R.string.throwdice_choose_operator_msg);
 					Toast.makeText(ctx, msg, Toast.LENGTH_LONG).show();
 				}
+			}
+		});
+		builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener()
+		{
+			@Override
+			public void onClick(DialogInterface dialog, int which)
+			{
+				dialog.dismiss();
 			}
 		});
 		return builder.create();

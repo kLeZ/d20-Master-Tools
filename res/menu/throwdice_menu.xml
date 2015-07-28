@@ -1,18 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 	<item
-		android:id="@+id/throwdice_menu_throw"
-		android:title="@string/throwdice_throw_menu_text"/>
-	<item
-		android:id="@+id/throwdice_menu_evaluateSingle"
-		android:title="@string/throwdice_evaluateSingle">
-	</item>
-	<item
 		android:id="@+id/throwdice_menu_clearTextView"
-		android:title="@string/clear">
-	</item>
+		android:title="@string/clear"/>
 	<item
 		android:id="@+id/throwdice_menu_resetDiceExpression"
-		android:title="@string/throwdice_reset_diceExpression">
-	</item>
+		android:title="@string/throwdice_reset_diceExpression"/>
+	<item
+		android:id="@+id/throwdice_menu_help"
+		android:title="@string/help"/>
 </menu>

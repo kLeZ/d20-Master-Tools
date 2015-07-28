@@ -33,6 +33,9 @@ public class D20MainActivity extends Activity
 			case R.id.throwdice_button:
 				intent = new Intent(this, ThrowDiceActivity.class);
 				break;
+			case R.id.info:
+				intent = new Intent(this, InfoActivity.class);
+				break;
 			default:
 				intent = new Intent(this, D20MainActivity.class);
 				break;

@@ -35,8 +35,17 @@
 		<TableRow
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content" >
+			<Button
+				android:id="@+id/info"
+				android:layout_width="0dp"
+				android:layout_height="fill_parent"
+				android:clickable="true"
+				android:onClick="goTo"
+				android:text="@string/info" />
 			<TextView
 				android:id="@+id/bottom_main_row"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
 				android:text="@string/bottom_main_row_msg" />
 		</TableRow>
 	</TableLayout>

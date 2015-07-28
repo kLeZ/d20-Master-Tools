@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="help_throwdice">To write a dice expression you have to write in the text input field something like below examples:
+1D6
+12D10-3
+4D8+2
+
+The expression evaluator accepts the following rules to verify a well written expression:
+1. The expression should start with a digit
+2. The expression can contain one and only one \'D\' token that divides the number of dice to roll with the die typology (Ex: D6, D8, D10)
+3. The expression can contain a modifier against the dice to roll in the form of [dice][operator][digit] (Ex: 1D6+5, 4D10-9, 3D8*2)
+4. The accepted operators are the arithmetic operators (+,-,*,/) in order to make possible the Addition, Subtraction, Multiplication and Division operations
+5. The expression can contain one and only one operator at the same time, no other operators can be accepted writing the expression
+6. The expression can contain every number of every digit even a weird expression like \'10000D57*32\', you are not limited with a list of dice you can roll such a 7-dice classic set roll possibility
+
+One expression is written you have to evaluate it and it will appear under the \'Evaluate\' button.
+If you want to add other expressions you should add an arithmetic operator to the evaluated expression by long clicking the expression and selecting the operator in the window just appeared.
+Every expression you want to add needs an operator but, by default, the implicit operator is Addition if you do not specify one.
+
+When your dice expression is completed you can tap the \'Roll\' button and see your result under that button.
+You can roll many times the same expression unless you reset the expression view by selecting this action in the menu.
+You can clear the results view by selecting the proper action in the menu.</string>
+</resources>
